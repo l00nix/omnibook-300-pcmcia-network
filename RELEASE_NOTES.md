@@ -14,7 +14,8 @@ Release package contents:
 
 - `O300NIC.COM`, the OmniBook 300-specific card enabler
 - diagnostic helper COM files
-- DOS batch wrappers for enable/disable, mTCP DHCP, and MicroWeb launch
+- DOS batch wrappers for enable/disable, IRQ-specific bring-up, mTCP DHCP, and
+  MicroWeb launch
 - sample `MTCP.CFG`
 
 External dependencies are not bundled. Install Rod Whitby's LXETH packet driver,

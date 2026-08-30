@@ -118,31 +118,58 @@ parse_tail:
     jcxz .done
     lodsb
     dec cx
-    cmp al, '5'
-    je .irq5
-    cmp al, '1'
-    jne .next
-    jcxz .done
-    lodsb
+    cmp al, '0'
+    jb .next
+    cmp al, '9'
+    ja .next
+    sub al, '0'
+    mov bl, al
+    jcxz .have_irq
+    mov bh, [si]
+    cmp bh, '0'
+    jb .have_irq
+    cmp bh, '9'
+    ja .have_irq
+    inc si
     dec cx
-    cmp al, '1'
-    je .irq11
-    cmp al, '2'
-    je .irq12
-    jmp .next
-.irq5:
-    mov byte [irq_num], 5
-    mov word [irq_di], 8005h
-    jmp .next
-.irq11:
-    mov byte [irq_num], 11
-    mov word [irq_di], 800bh
-    jmp .next
-.irq12:
-    mov byte [irq_num], 12
-    mov word [irq_di], 800ch
+    sub bh, '0'
+    mov al, bl
+    mov ah, 0
+    mov dl, 10
+    mul dl
+    add al, bh
+    mov bl, al
+.have_irq:
+    mov al, bl
+    call set_irq_from_al
     jmp .next
 .done:
+    ret
+
+set_irq_from_al:
+    cmp al, 3
+    je .set
+    cmp al, 4
+    je .set
+    cmp al, 5
+    je .set
+    cmp al, 7
+    je .set
+    cmp al, 9
+    je .set
+    cmp al, 10
+    je .set
+    cmp al, 11
+    je .set
+    cmp al, 12
+    je .set
+    cmp al, 15
+    je .set
+    ret
+.set:
+    mov [irq_num], al
+    mov ah, 80h
+    mov [irq_di], ax
     ret
 
 set_socket:
@@ -653,7 +680,7 @@ rawbuf times 256 db 0
 %endif
 
 %ifdef GENERIC
-banner db 13,10,'O300NIC v0.1 - CIS-parsing NE2000 300h setup test',13,10,'$'
+banner db 13,10,'O300NIC v1.1 - CIS-parsing NE2000 300h setup test',13,10,'$'
 cor_ok db 'write derived COR OK',13,10,'$'
 fcsr_ok db 'write derived FCSR OK',13,10,'$'
 %elifdef EN2216_FAMILY

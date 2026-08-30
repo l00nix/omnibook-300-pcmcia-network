@@ -31,10 +31,21 @@ Use your own gateway address if DHCP reports something other than 10.0.0.1.
 
 Tested cards:
 
-  Netgear FA411                 00:40:F4:10:DF:C2
-  Buffalo Tough Connect LPC3-CLT 00:07:40:19:1A:4D
-  MAP Japan MPL-972/Tamarack    00:C0:0C:02:7F:26
-  Accton EN2216-1               00:00:EB:3A:43:01
+  Netgear FA411
+  Buffalo Tough Connect LPC3-CLT
+  MAP Japan MPL-972/Tamarack
+  Accton EN2216-1
+
+NICUP uses IRQ 5 by default. If NICUP prints a real MAC address but
+TCPUP times out, try an IRQ-specific wrapper from a clean boot:
+
+  NICUP10
+  TCPUP
+
+Available wrappers:
+
+  NICUP3   NICUP4   NICUP5   NICUP7   NICUP9
+  NICUP10  NICUP11  NICUP12  NICUP15
 
 If booting the OmniBook 300 C: drive from PCMCIA/CF storage, the
 OmniBook 300 System/Application ROM card in the D slot is still needed

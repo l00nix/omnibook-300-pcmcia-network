@@ -25,7 +25,13 @@ window 05 -> I/O 310h-31Fh
 ```
 
 After that, the HP 200LX `LXEN2216.COM` packet driver can use the card as an
-NE2000-compatible adapter at `300h`.
+NE2000-compatible adapter at `300h`. The enabler accepts IRQ arguments `3`,
+`4`, `5`, `7`, `9`, `10`, `11`, `12`, and `15`; IRQ 5 is the default used by
+`NICUP`.
+
+On OmniBook 425/530 experiments, a real MAC address followed by mTCP DHCP
+timeouts points to the card being mapped but the packet receive IRQ not firing.
+Use the IRQ-specific wrappers to find the machine/card combination that works.
 
 Observed mTCP proof:
 

@@ -103,7 +103,20 @@ NICUP
 ```
 
 The enabler should print a real MAC address, then `LXEN2216.COM` should print
-the same MAC address and install on packet interrupt `0x66`.
+the same MAC address and install on packet interrupt `0x66`. `NICUP` uses
+IRQ 5 by default.
+
+If the MAC address appears but mTCP DHCP times out, the card is probably mapped
+but the receive IRQ is wrong. Try the alternate wrappers from a clean boot, or
+run `NICDN` before the next attempt:
+
+```dos
+NICUP10
+TCPUP
+```
+
+Available wrappers are `NICUP3`, `NICUP4`, `NICUP5`, `NICUP7`, `NICUP9`,
+`NICUP10`, `NICUP11`, `NICUP12`, and `NICUP15`.
 
 Then test mTCP:
 
