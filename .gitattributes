@@ -1,0 +1,6 @@
+*.COM binary
+*.jpg binary
+*.zip binary
+*.BAT text eol=crlf
+*.CFG text eol=crlf
+*.TXT text eol=crlf

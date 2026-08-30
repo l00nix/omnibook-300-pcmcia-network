@@ -1,0 +1,4 @@
+@ECHO OFF
+SET MTCPCFG=C:\MTCP\MTCP.CFG
+C:\MTCP\DHCP.EXE
+ECHO If DHCP succeeded, try: C:\MTCP\PING.EXE gateway-address

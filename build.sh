@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+set -eu
+cd "$(dirname "$0")"
+mkdir -p bin
+nasm -f bin -D GENERIC -o bin/O300NIC.COM src/o300ne.asm
+nasm -f bin -o bin/O300DIAG.COM src/o300diag.asm
+nasm -f bin -o bin/O300RAW.COM src/o300raw.asm
+nasm -f bin -o bin/O300WIN.COM src/o300win.asm
+nasm -f bin -o bin/O300SIZ.COM src/o300siz.asm
+ls -l bin/O300NIC.COM bin/O300DIAG.COM bin/O300RAW.COM bin/O300WIN.COM bin/O300SIZ.COM
