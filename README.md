@@ -16,12 +16,12 @@ Release 1.0 is the first known working public package.
 
 Confirmed on an HP OmniBook 300 with these cards:
 
-| Card | Observed MAC |
+| Card | Result |
 | --- | --- |
-| Netgear FA411 10/100 PCMCIA Mobile Adapter | `00:40:F4:10:DF:C2` |
-| Buffalo Tough Connect LPC3-CLT | `00:07:40:19:1A:4D` |
-| MAP Japan MPL-972/Tamarack | `00:C0:0C:02:7F:26` |
-| Accton EN2216-1 | `00:00:EB:3A:43:01` |
+| Netgear FA411 10/100 PCMCIA Mobile Adapter | DHCP, ping, MicroWeb working |
+| Buffalo Tough Connect LPC3-CLT | MAC detection and packet-driver load confirmed |
+| MAP Japan MPL-972/Tamarack | MAC detection and packet-driver load confirmed |
+| Accton EN2216-1 | MAC detection and packet-driver load confirmed |
 
 The OmniBook 300 also continued to recognize a PCMCIA storage card in the other
 slot while the network stack was loaded.
@@ -135,13 +135,7 @@ MicroWeb browsing `68k.news`:
 
 ![MicroWeb browsing 68k.news](docs/images/microweb-68k-news.jpg)
 
-O300NIC identifying each tested card:
-
-![O300NIC Accton EN2216-1 enablement](docs/images/o300nic-accton.jpg)
-
-![O300NIC Buffalo Tough Connect LPC3-CLT enablement](docs/images/o300nic-buffalo.jpg)
-
-![O300NIC MAP Japan MPL-972 enablement](docs/images/o300nic-mpl-972.jpg)
+O300NIC identifying a tested card and handing off to the packet driver:
 
 ![O300NIC Netgear FA411 enablement](docs/images/o300nic-fa411.jpg)
 
