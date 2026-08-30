@@ -19,9 +19,9 @@ Confirmed on an HP OmniBook 300 with these cards:
 | Card | Result |
 | --- | --- |
 | Netgear FA411 10/100 PCMCIA Mobile Adapter | DHCP, ping, MicroWeb working |
-| Buffalo Tough Connect LPC3-CLT | MAC detection and packet-driver load confirmed |
+| Buffalo Tough Connect LPC3-CLT | DHCP, ping, MicroWeb working |
 | MAP Japan MPL-972/Tamarack | MAC detection and packet-driver load confirmed |
-| Accton EN2216-1 | MAC detection and packet-driver load confirmed |
+| Accton EN2216-1 | DHCP, ping, MicroWeb working |
 
 The OmniBook 300 also continued to recognize a PCMCIA storage card in the other
 slot while the network stack was loaded.
