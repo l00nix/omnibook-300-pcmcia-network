@@ -25,8 +25,10 @@ start:
     call restore_cr
 
     call print_state
+    call print_empty_hint
     call pick_next_page
-    call read_ring_header
+    call read_ring_bytes
+    call read_ring_words
     call restore_cr
 
     mov dx, done_msg
@@ -80,14 +82,57 @@ pick_next_page:
     mov [dump_page], al
     ret
 
-read_ring_header:
-    mov dx, ring_msg
+read_ring_bytes:
+    mov dx, byte_ring_msg
     call puts
     mov al, [dump_page]
     call print_hex8
     mov dx, page_suffix
     call puts
 
+    call setup_remote_read
+
+    mov di, ringbuf
+    mov cx, 32
+    mov dx, NE_BASE+10h
+.read:
+    in al, dx
+    stosb
+    loop .read
+
+    mov dx, bytes_msg
+    call puts
+    mov si, ringbuf
+    mov cx, 32
+    call dump_bytes
+    ret
+
+read_ring_words:
+    mov dx, word_ring_msg
+    call puts
+    mov al, [dump_page]
+    call print_hex8
+    mov dx, page_suffix
+    call puts
+
+    call setup_remote_read
+
+    mov di, wordbuf
+    mov cx, 16
+    mov dx, NE_BASE+10h
+.read:
+    in ax, dx
+    stosw
+    loop .read
+
+    mov dx, bytes_msg
+    call puts
+    mov si, wordbuf
+    mov cx, 32
+    call dump_bytes
+    ret
+
+setup_remote_read:
     mov dx, NE_BASE
     mov al, [orig_cr]
     and al, 3fh
@@ -115,20 +160,6 @@ read_ring_header:
     mov dx, NE_BASE
     mov al, 0ah
     out dx, al
-
-    mov di, ringbuf
-    mov cx, 32
-    mov dx, NE_BASE+10h
-.read:
-    in al, dx
-    stosb
-    loop .read
-
-    mov dx, bytes_msg
-    call puts
-    mov si, ringbuf
-    mov cx, 32
-    call dump_bytes
     ret
 
 print_state:
@@ -165,6 +196,15 @@ print_state:
     mov al, [rsr]
     call print_hex8
     call crlf
+    ret
+
+print_empty_hint:
+    mov al, [bnry]
+    cmp al, [curr]
+    jne .done
+    mov dx, empty_msg
+    call puts
+.done:
     ret
 
 restore_cr:
@@ -245,8 +285,9 @@ isr db 0
 rsr db 0
 dump_page db 0
 ringbuf times 32 db 0
+wordbuf times 32 db 0
 
-banner db 13,10,'NERING v0.1 - NE2000 RX ring at 300h',13,10,'$'
+banner db 13,10,'NERING v0.2 - NE2000 RX ring at 300h',13,10,'$'
 cr_msg db 'CR: $'
 pstart_msg db 'PSTART $'
 pstop_msg db ' PSTOP $'
@@ -254,7 +295,9 @@ bnry_msg db ' BNRY $'
 curr_msg db ' CURR $'
 isr_msg db 'ISR $'
 rsr_msg db ' RSR $'
-ring_msg db 'Ring bytes at page $'
+empty_msg db 'BNRY equals CURR: ring appears empty; dumps below may be stale.',13,10,'$'
+byte_ring_msg db 'Byte-mode ring bytes at page $'
+word_ring_msg db 'Word-mode ring bytes at page $'
 page_suffix db '00h',13,10,'$'
 bytes_msg db 'bytes: $'
-done_msg db 'Done. Header is status,next,count-lo,count-hi.',13,10,'$'
+done_msg db 'Done. Header is status,next,count-lo,count-hi if a packet is present.',13,10,'$'
