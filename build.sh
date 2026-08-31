@@ -7,4 +7,6 @@ nasm -f bin -o bin/O300DIAG.COM src/o300diag.asm
 nasm -f bin -o bin/O300RAW.COM src/o300raw.asm
 nasm -f bin -o bin/O300WIN.COM src/o300win.asm
 nasm -f bin -o bin/O300SIZ.COM src/o300siz.asm
-ls -l bin/O300NIC.COM bin/O300DIAG.COM bin/O300RAW.COM bin/O300WIN.COM bin/O300SIZ.COM
+nasm -f bin -o bin/NEREG.COM src/nereg.asm
+nasm -f bin -o bin/NERING.COM src/nering.asm
+ls -l bin/O300NIC.COM bin/O300DIAG.COM bin/O300RAW.COM bin/O300WIN.COM bin/O300SIZ.COM bin/NEREG.COM bin/NERING.COM
