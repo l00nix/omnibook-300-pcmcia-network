@@ -12,6 +12,7 @@ O300NET\O300WIN.COM
 O300NET\O300SIZ.COM
 O300NET\NEREG.COM
 O300NET\NERING.COM
+O300NET\NETXMIT.COM
 O300NET\NICUP.BAT
 O300NET\NICUP3.BAT
 O300NET\NICUP4.BAT
@@ -32,6 +33,7 @@ O300NET\PKTSTAT.BAT
 O300NET\PKTLIST.BAT
 O300NET\NEREG.BAT
 O300NET\NERING.BAT
+O300NET\TXTEST.BAT
 O300NET\WEB.BAT
 O300NET\MTCP.CFG
 ```
@@ -77,6 +79,25 @@ WEB http://68k.news
 `NICUP` uses IRQ 5. If the enabler and packet driver show a real MAC address
 but DHCP times out, try `NICUP10`, `NICUP11`, `NICUP12`, or the other IRQ
 wrappers from a clean boot.
+
+## Raw Transmit Diagnostic
+
+`TXTEST.BAT` directly reinitializes the NIC and sends three byte-mode and
+three word-mode broadcast test frames using experimental EtherType `88B5`.
+Run it only after a fresh boot, and reboot when the test finishes:
+
+```dos
+B:
+CD \OBNET
+TXTEST 5
+```
+
+If the wrapper cannot be used, run the equivalent commands directly:
+
+```dos
+O300NIC 5
+NETXMIT
+```
 
 ## Shutdown
 

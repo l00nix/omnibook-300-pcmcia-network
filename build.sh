@@ -9,4 +9,5 @@ nasm -f bin -o bin/O300WIN.COM src/o300win.asm
 nasm -f bin -o bin/O300SIZ.COM src/o300siz.asm
 nasm -f bin -o bin/NEREG.COM src/nereg.asm
 nasm -f bin -o bin/NERING.COM src/nering.asm
-ls -l bin/O300NIC.COM bin/O300DIAG.COM bin/O300RAW.COM bin/O300WIN.COM bin/O300SIZ.COM bin/NEREG.COM bin/NERING.COM
+nasm -f bin -o bin/NETXMIT.COM src/netxmit.asm
+ls -l bin/O300NIC.COM bin/O300DIAG.COM bin/O300RAW.COM bin/O300WIN.COM bin/O300SIZ.COM bin/NEREG.COM bin/NERING.COM bin/NETXMIT.COM

@@ -121,7 +121,9 @@ Available wrappers are `NICUP3`, `NICUP4`, `NICUP5`, `NICUP7`, `NICUP9`,
 Diagnostic helpers are included for bring-up on related OmniBooks. `PKTSCAN`,
 `PKTSTAT`, and `PKTLIST` inspect the packet-driver interface through mTCP's
 packet tool. `NEREG` dumps NE2000 page registers, and `NERING` snapshots the
-receive-ring header bytes at I/O base `300h`.
+receive-ring header bytes at I/O base `300h`. `NETXMIT`, normally invoked by
+`TXTEST`, performs a raw byte-mode and word-mode transmit test without loading
+the packet driver.
 
 Then test mTCP:
 
