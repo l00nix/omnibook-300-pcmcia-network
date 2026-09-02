@@ -73,7 +73,7 @@ CD \O300NET
 NICUP
 TCPUP
 C:\MTCP\PING.EXE gateway-address
-WEB http://68k.news
+WEB http://68k.news/
 ```
 
 `NICUP` uses IRQ 5. If the enabler and packet driver show a real MAC address
@@ -106,3 +106,9 @@ NICDN
 ```
 
 `NICDN` unloads the packet driver from interrupt `0x66` using `TERMIN.COM`.
+
+## OmniBook 425
+
+The OmniBook 425 path is experimental and documented separately in
+[`docs/OMNIBOOK_425.md`](docs/OMNIBOOK_425.md). Do not assume the OmniBook 300
+packet-driver pairing applies unchanged on the 425.

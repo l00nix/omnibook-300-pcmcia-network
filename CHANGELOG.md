@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Generalized `O300NIC.COM` I/O-window selection so related OmniBooks can use
+  the socket windows assigned by the card BIOS instead of assuming `04h/05h`.
+- Added OmniBook 425 experimental notes for the Netgear FA411 plus Crynwr
+  `NE2000.COM` packet-driver path.
+- Updated the MicroWeb launcher to pass `-video=h`.
+- Added a build-time check for DOS batch-file CRLF line endings.
+
 ## 1.0.0 - 2026-08-30
 
 - First public release.

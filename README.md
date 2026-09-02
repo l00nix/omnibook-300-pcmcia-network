@@ -12,7 +12,7 @@ Brutman's mTCP and MicroWeb can use the network.
 
 ## Status
 
-Release 1.0 is the first known working public package.
+Release 1.0 is the first known working public package for the OmniBook 300.
 
 Confirmed on an HP OmniBook 300 with these cards:
 
@@ -26,6 +26,11 @@ Confirmed on an HP OmniBook 300 with these cards:
 The OmniBook 300 also continued to recognize a PCMCIA storage card in the other
 slot while the network stack was loaded.
 
+Experimental OmniBook 425 testing is tracked separately in
+[docs/OMNIBOOK_425.md](docs/OMNIBOOK_425.md). The short version: the Netgear
+FA411 can be enabled on the 425 with the same CIS-parsing enabler, but it uses
+the generic Crynwr `NE2000.COM` packet driver instead of `LXEN2216.COM`.
+
 ## What This Does
 
 `O300NIC.COM` is a non-resident card enabler. It:
@@ -34,7 +39,7 @@ slot while the network stack was loaded.
 - checks for a LAN function and a `300h` CFTABLE I/O entry
 - derives the card's COR/FCSR offsets and COR value from CIS data
 - writes the card configuration registers
-- maps the OmniBook 300's PCMCIA I/O windows as two adjacent 16-byte windows
+- maps the socket's PCMCIA I/O windows as two adjacent 16-byte windows
 - configures the socket IRQ, defaulting to IRQ 5
 - probes the NE2000 PROM and prints the MAC address
 
@@ -50,6 +55,8 @@ Useful upstream links:
 
 - Rod Whitby's LXETH package containing `LXEN2216.COM` and `TERMIN.COM`:
   <https://sourceforge.net/projects/rwhitby/files/HP200LX%20Ethernet%20Drivers/1.0/lxeth10b.zip/download>
+- Crynwr packet drivers, useful for the experimental OmniBook 425 FA411 path:
+  <http://crynwr.com/drivers/>
 - Michael Brutman's mTCP:
   <https://www.brutman.com/mTCP/mTCP.html>
 - mTCP January 10, 2025 ZIP:
@@ -130,7 +137,7 @@ Then test mTCP:
 ```dos
 TCPUP
 C:\MTCP\PING.EXE 10.0.0.1
-WEB http://68k.news
+WEB http://68k.news/
 ```
 
 Use your own gateway address if DHCP reports something other than `10.0.0.1`.
@@ -167,7 +174,8 @@ Install NASM, then run:
 ./build.sh
 ```
 
-The build emits `.COM` files into `bin/`.
+The build emits `.COM` files into `bin/` and checks the DOS batch wrappers for
+CRLF line endings.
 
 ## Notes
 

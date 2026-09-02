@@ -17,21 +17,26 @@ Two working configuration families have been observed:
 
 The O300 card BIOS accepts 16-byte I/O windows but rejects a single 32-byte
 window for the NE2000 register block. The enabler therefore maps two adjacent
-16-byte windows:
+16-byte windows. On the OmniBook 300 these are normally:
 
 ```text
 window 04 -> I/O 300h-30Fh
 window 05 -> I/O 310h-31Fh
 ```
 
+`O300NIC.COM` v1.3 discovers the socket's I/O window IDs before mapping the
+card. This preserves the OmniBook 300 `04h`/`05h` behavior while avoiding a
+425-specific failure mode where the network socket was assigned windows
+`06h`/`07h` and `04h`/`05h` belonged to storage.
+
 After that, the HP 200LX `LXEN2216.COM` packet driver can use the card as an
 NE2000-compatible adapter at `300h`. The enabler accepts IRQ arguments `3`,
 `4`, `5`, `7`, `9`, `10`, `11`, `12`, and `15`; IRQ 5 is the default used by
 `NICUP`.
 
-On OmniBook 425/530 experiments, a real MAC address followed by mTCP DHCP
-timeouts points to the card being mapped but the packet receive IRQ not firing.
-Use the IRQ-specific wrappers to find the machine/card combination that works.
+On the OmniBook 425, the Netgear FA411 reached DHCP and MicroWeb with Crynwr
+`NE2000.COM` instead of `LXEN2216.COM`. The 425 path is still experimental; see
+`docs/OMNIBOOK_425.md`.
 
 Observed mTCP proof:
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 cd "$(dirname "$0")"
+./tools/check-dos-bat-line-endings.sh
 mkdir -p bin
 nasm -f bin -D GENERIC -o bin/O300NIC.COM src/o300ne.asm
 nasm -f bin -o bin/O300DIAG.COM src/o300diag.asm

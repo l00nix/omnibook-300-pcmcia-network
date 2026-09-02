@@ -20,3 +20,9 @@ Release package contents:
 
 External dependencies are not bundled. Install Rod Whitby's LXETH packet driver,
 Michael Brutman's mTCP, and MicroWeb separately.
+
+## Post-1.0 Notes
+
+Current development adds dynamic socket I/O-window discovery to `O300NIC.COM`.
+That keeps the OmniBook 300 path intact and records an experimental OmniBook
+425 FA411 path using Crynwr `NE2000.COM`; see `docs/OMNIBOOK_425.md`.

@@ -10,6 +10,9 @@ O300NET\O300DIAG.COM
 O300NET\O300RAW.COM
 O300NET\O300WIN.COM
 O300NET\O300SIZ.COM
+O300NET\NEREG.COM
+O300NET\NERING.COM
+O300NET\NETXMIT.COM
 O300NET\NICUP.BAT
 O300NET\NICUP3.BAT
 O300NET\NICUP4.BAT
@@ -25,6 +28,12 @@ O300NET\NETUP.BAT
 O300NET\NETDN.BAT
 O300NET\TCPUP.BAT
 O300NET\PKTDN.BAT
+O300NET\PKTSCAN.BAT
+O300NET\PKTSTAT.BAT
+O300NET\PKTLIST.BAT
+O300NET\NEREG.BAT
+O300NET\NERING.BAT
+O300NET\TXTEST.BAT
 O300NET\WEB.BAT
 O300NET\MTCP.CFG
 ```
@@ -70,6 +79,21 @@ WEB http://68k.news
 `NICUP` uses IRQ 5. If the enabler and packet driver show a real MAC address
 but DHCP times out, try `NICUP10`, `NICUP11`, `NICUP12`, or the other IRQ
 wrappers from a clean boot.
+
+`WEB.BAT` launches MicroWeb with `-video=h`, which is the tested video mode for
+the OmniBook display.
+
+## Raw Transmit Diagnostic
+
+`TXTEST.BAT` directly reinitializes the NIC and sends three byte-mode and
+three word-mode broadcast test frames using experimental EtherType `88B5`.
+Run it only after a fresh boot, and reboot when the test finishes:
+
+```dos
+C:
+CD \O300NET
+TXTEST 5
+```
 
 ## Shutdown
 

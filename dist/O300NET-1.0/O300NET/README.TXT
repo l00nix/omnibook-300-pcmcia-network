@@ -25,7 +25,7 @@ Quick test:
   NICUP
   TCPUP
   C:\MTCP\PING.EXE 10.0.0.1
-  WEB http://68k.news
+  WEB http://68k.news/
 
 Use your own gateway address if DHCP reports something other than 10.0.0.1.
 
@@ -46,6 +46,12 @@ Available wrappers:
 
   NICUP3   NICUP4   NICUP5   NICUP7   NICUP9
   NICUP10  NICUP11  NICUP12  NICUP15
+
+WEB.BAT runs MicroWeb with -video=h, the tested OmniBook video mode.
+
+Diagnostic wrappers included:
+
+  PKTSCAN   PKTSTAT   PKTLIST   NEREG   NERING   TXTEST
 
 If booting the OmniBook 300 C: drive from PCMCIA/CF storage, the
 OmniBook 300 System/Application ROM card in the D slot is still needed

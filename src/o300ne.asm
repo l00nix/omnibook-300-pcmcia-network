@@ -5,8 +5,10 @@
 ;
 ; This is intentionally not resident. It writes one card's COR/FCSR values,
 ; configures socket 1, maps the card at I/O base 300h, and probes the PROM
-; bytes. v1.0 first tries the CIS-advertised 1Fh I/O size, then falls back to
-; two adjacent 16-byte windows.
+; bytes. v1.3 first tries a CIS-advertised 1Fh I/O size, then falls back to
+; two adjacent 16-byte windows. It discovers the socket's available I/O window
+; IDs instead of assuming the OmniBook 300's usual 04h/05h pair, which also
+; allows testing on the OmniBook 425 where socket 1 can use 06h/07h.
 ;
 ; Build with -D GENERIC for O300NIC.COM, which derives COR/FCSR from the
 ; inserted card's CIS rather than using card-specific constants.
@@ -69,6 +71,12 @@ start:
     mov dx, fcsr_ok
     call puts
 
+%ifdef GENERIC
+    call select_io_windows
+    jc window_discovery_fail
+    call print_io_windows
+%endif
+
     call map_single_1f
     jnc .mapped
 
@@ -105,6 +113,12 @@ parse_fail:
     mov dx, parse_fail_msg
     call puts
     mov ax, 4c02h
+    int 21h
+
+window_discovery_fail:
+    mov dx, window_discovery_fail_msg
+    call puts
+    mov ax, 4c03h
     int 21h
 %endif
 
@@ -172,6 +186,60 @@ set_irq_from_al:
     mov [irq_di], ax
     ret
 
+%ifdef GENERIC
+select_io_windows:
+    mov byte [scan_id], 0
+    mov byte [io_found], 0
+.scan:
+    mov ax, 8700h
+    mov bh, [scan_id]
+    push ds
+    int 1ah
+    pop ds
+    jc .next
+    test bl, 04h
+    jz .next
+
+    mov ax, 8800h
+    mov bh, [scan_id]
+    push ds
+    int 1ah
+    pop ds
+    jc .next
+    cmp bl, 1
+    jne .next
+
+    cmp byte [io_found], 0
+    jne .second
+    mov al, [scan_id]
+    mov [win_low_id], al
+    inc byte [io_found]
+    jmp .next
+.second:
+    mov al, [scan_id]
+    mov [win_high_id], al
+    clc
+    ret
+.next:
+    inc byte [scan_id]
+    cmp byte [scan_id], 16
+    jb .scan
+    stc
+    ret
+
+print_io_windows:
+    mov dx, io_windows_msg
+    call puts
+    mov al, [win_low_id]
+    call print_hex8
+    mov dx, io_windows_sep
+    call puts
+    mov al, [win_high_id]
+    call print_hex8
+    call crlf
+    ret
+%endif
+
 set_socket:
     mov ax, 8e00h
     mov bx, 8001h
@@ -189,15 +257,17 @@ set_window:
     mov cx, [win_size]
     mov dx, 0520h
     mov si, [win_base]
-    xor di, di
+    mov di, [win_off]
     int 1ah
     ret
 
 map_single_1f:
     mov ax, [io_base]
     mov [win_base], ax
+    mov word [win_off], 0
     mov word [win_size], 1fh
-    mov byte [win_bh], 4
+    mov al, [win_low_id]
+    mov [win_bh], al
     call set_window
     jc .bad
 
@@ -227,8 +297,10 @@ map_single_1f:
 map_dual_window:
     mov ax, [io_base]
     mov [win_base], ax
+    mov word [win_off], 0
     mov word [win_size], 10h
-    mov byte [win_bh], 4
+    mov al, [win_low_id]
+    mov [win_bh], al
     call set_window
     jc .bad
 
@@ -243,7 +315,9 @@ map_dual_window:
     mov ax, [io_base]
     add ax, 10h
     mov [win_base], ax
-    mov byte [win_bh], 5
+    mov word [win_off], 10h
+    mov al, [win_high_id]
+    mov [win_bh], al
     call set_window
     jc .bad
 
@@ -472,16 +546,47 @@ print_derived:
     ret
 %endif
 
-read_prom:
+reset_nic:
+    push ax
+    push bx
+    push cx
+    push dx
+
+    ; Reading the reset port returns a latch value that must be written back.
+    ; Preserve it while allowing the ISA bus to settle, then wait for ISR.RST.
     mov dx, [io_base]
     add dx, 1fh
     in al, dx
+    mov bl, al
     mov cx, 1600
-.wait:
+.delay:
     in al, 61h
-    loop .wait
+    loop .delay
+    mov al, bl
     out dx, al
 
+    mov dx, [io_base]
+    add dx, 07h
+    mov cx, 0ffffh
+.wait_rst:
+    in al, dx
+    test al, 80h
+    jnz .ready
+    loop .wait_rst
+    stc
+    jmp .done
+.ready:
+    mov al, 80h
+    out dx, al
+    clc
+.done:
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+
+read_prom:
     mov dx, [io_base]
     add dx, 0ch
     mov al, 04h
@@ -537,6 +642,15 @@ probe_current_base:
     call print_hex16
     call crlf
 
+    call reset_nic
+    jc .reset_warn
+    mov dx, reset_ok_msg
+    call puts
+    jmp .read_prom
+.reset_warn:
+    mov dx, reset_warn_msg
+    call puts
+.read_prom:
     call read_prom
     mov dx, prom_msg
     call puts
@@ -658,8 +772,11 @@ rw_bseg dw 0
 irq_num db 5
 irq_di dw 8005h
 win_bh db 9
+win_low_id db 4
+win_high_id db 5
 io_base dw 0300h
 win_base dw 0300h
+win_off dw 0000h
 win_size dw 0010h
 last_ax dw 0
 corval db CARD_COR_VALUE
@@ -676,11 +793,13 @@ candidate_cor db 0
 have_lan db 0
 have_config db 0
 have_cftable db 0
+scan_id db 0
+io_found db 0
 rawbuf times 256 db 0
 %endif
 
 %ifdef GENERIC
-banner db 13,10,'O300NIC v1.1 - CIS-parsing NE2000 300h setup test',13,10,'$'
+banner db 13,10,'O300NIC v1.3 - CIS-parsing NE2000 300h setup test',13,10,'$'
 cor_ok db 'write derived COR OK',13,10,'$'
 fcsr_ok db 'write derived FCSR OK',13,10,'$'
 %elifdef EN2216_FAMILY
@@ -710,11 +829,16 @@ map_msg db 'Configured base 0x$'
 base_msg db 'Probe base 0x$'
 prom_msg db 'NE2000 PROM bytes: $'
 mac_msg db 'MAC address: $'
+reset_ok_msg db 'NE2000 hardware reset OK',13,10,'$'
+reset_warn_msg db 'Warning: NE2000 reset did not assert ISR.RST',13,10,'$'
 done_msg db 'Done. Try LXEN2216 0x66 next.',13,10,'$'
 fail_msg db 'Card BIOS call failed, AX=0x$'
 %ifdef GENERIC
 cis_msg db 'Reading CIS from socket 1',13,10,'$'
 lan_msg db 'LAN function and 300h CFTABLE entry found',13,10,'$'
+io_windows_msg db 'Socket 1 I/O windows 0x$'
+io_windows_sep db '/0x$'
+window_discovery_fail_msg db 'Could not find two socket 1 I/O windows',13,10,'$'
 cor_off_msg db 'Derived COR offset 0x$'
 fcsr_off_msg db 'Derived FCSR offset 0x$'
 cor_val_msg db 'Derived COR value 0x$'

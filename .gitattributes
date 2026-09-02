@@ -1,6 +1,8 @@
 *.COM binary
-*.jpg binary
+*.ZIP binary
 *.zip binary
+*.jpg binary
 *.BAT text eol=crlf
 *.CFG text eol=crlf
 *.TXT text eol=crlf
+dist/**/INSTALL.MD text eol=crlf
