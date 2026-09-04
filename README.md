@@ -218,10 +218,6 @@ MicroWeb browsing `68k.news`:
 
 ![MicroWeb browsing 68k.news](docs/images/microweb-68k-news.jpg)
 
-O300NIC identifying a tested card and handing off to the packet driver:
-
-![O300NIC Netgear FA411 enablement](docs/images/o300nic-fa411.jpg)
-
 ## Build
 
 Install NASM, then run:
