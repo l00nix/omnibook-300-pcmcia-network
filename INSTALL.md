@@ -7,12 +7,15 @@ The repository contains these installable files:
 ```text
 O300NET\O300NIC.COM
 O300NET\O300DIAG.COM
+O300NET\O300SOCK.COM
 O300NET\O300RAW.COM
 O300NET\O300WIN.COM
 O300NET\O300SIZ.COM
 O300NET\NEREG.COM
 O300NET\NERING.COM
 O300NET\NETXMIT.COM
+O300NET\NE2KUP.BAT
+O300NET\NE2KDN.BAT
 O300NET\NICUP.BAT
 O300NET\NICUP3.BAT
 O300NET\NICUP4.BAT
@@ -36,19 +39,42 @@ O300NET\NERING.BAT
 O300NET\TXTEST.BAT
 O300NET\WEB.BAT
 O300NET\MTCP.CFG
+O300NET\CRYNWR.TXT
 ```
 
-The `.COM` files are this project's OmniBook 300 tools. The `.BAT` files are
-convenience wrappers.
+The `.COM` files are this project's OmniBook 300 tools. `O300SOCK.COM` is a
+read-only Card BIOS socket scanner that is useful on related OmniBooks where a
+card might appear outside sockets `0` and `1`. The `.BAT` files are convenience
+wrappers.
 
 ## Dependencies
 
-Install these separately:
+Install the confirmed LXETH packet-driver files separately:
 
 ```text
 C:\LXNET\LXEN2216.COM
 C:\LXNET\TERMIN.COM
 ```
+
+For the experimental Crynwr path, install this separately:
+
+```text
+C:\O300NET\CRYNWR\NE2000.COM
+```
+
+Use the Crynwr source/binary set from:
+
+```text
+https://github.com/fragglet/crynwr_mirror
+```
+
+For Crynwr packet-driver unload, install a compatible `TERMIN.COM` in
+`C:\O300NET\CRYNWR`, or use the LXETH copy in `C:\LXNET`.
+
+The Crynwr path is not yet the confirmed OmniBook 300 path. On the live
+OmniBook 300 FA411 test machine, Crynwr `NE2000.COM` loads and transmits DHCP
+packets, but currently receives none.
+
 
 For TCP/IP testing, install mTCP separately:
 
@@ -76,9 +102,17 @@ C:\MTCP\PING.EXE gateway-address
 WEB http://68k.news/
 ```
 
-`NICUP` uses IRQ 5. If the enabler and packet driver show a real MAC address
-but DHCP times out, try `NICUP10`, `NICUP11`, `NICUP12`, or the other IRQ
-wrappers from a clean boot.
+`NICUP` uses IRQ 5 and the confirmed `LXEN2216.COM` path.
+
+For Crynwr experiments, use `NE2KUP`. If the enabler and packet driver show a
+real MAC address but DHCP times out, try another IRQ from a clean boot:
+
+```dos
+NE2KUP 10
+TCPUP
+```
+
+`NICUP` remains available for the original `LXEN2216.COM` path.
 
 ## Raw Transmit Diagnostic
 
@@ -105,7 +139,8 @@ NETXMIT
 NICDN
 ```
 
-`NICDN` unloads the packet driver from interrupt `0x66` using `TERMIN.COM`.
+`NE2KDN` or `NICDN` unloads the packet driver from interrupt `0x66` using
+`TERMIN.COM`.
 
 ## OmniBook 425
 

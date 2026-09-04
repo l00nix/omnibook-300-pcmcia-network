@@ -12,9 +12,25 @@
 ;
 ; Build with -D GENERIC for O300NIC.COM, which derives COR/FCSR from the
 ; inserted card's CIS rather than using card-specific constants.
+;
+; Experimental builds can override SOCKET_NUM and FORCE_WIN_LOW/FORCE_WIN_HIGH
+; for related OmniBook slot tests. The default SOCKET_NUM=1 build remains the
+; release baseline.
 
 bits 16
 org 100h
+
+%ifndef WIN_LOW_ATTR
+%define WIN_LOW_ATTR 05h
+%endif
+
+%ifndef WIN_HIGH_ATTR
+%define WIN_HIGH_ATTR 05h
+%endif
+
+%ifndef SOCKET_NUM
+%define SOCKET_NUM 1
+%endif
 
 %ifdef GENERIC
 %define CARD_COR_VALUE 00h
@@ -188,6 +204,12 @@ set_irq_from_al:
 
 %ifdef GENERIC
 select_io_windows:
+%ifdef FORCE_WIN_LOW
+    mov byte [win_low_id], FORCE_WIN_LOW
+    mov byte [win_high_id], FORCE_WIN_HIGH
+    clc
+    ret
+%endif
     mov byte [scan_id], 0
     mov byte [io_found], 0
 .scan:
@@ -206,7 +228,7 @@ select_io_windows:
     int 1ah
     pop ds
     jc .next
-    cmp bl, 1
+    cmp bl, SOCKET_NUM
     jne .next
 
     cmp byte [io_found], 0
@@ -242,7 +264,7 @@ print_io_windows:
 
 set_socket:
     mov ax, 8e00h
-    mov bx, 8001h
+    mov bx, 8000h | SOCKET_NUM
     mov cx, 0111h
     xor dx, dx
     mov si, 2
@@ -253,9 +275,14 @@ set_socket:
 set_window:
     mov ax, 8900h
     mov bh, [win_bh]
-    mov bl, 1
+    mov bl, SOCKET_NUM
     mov cx, [win_size]
+%ifdef PARAM_WIN_ATTR
+    mov dh, [win_attr]
+    mov dl, 20h
+%else
     mov dx, 0520h
+%endif
     mov si, [win_base]
     mov di, [win_off]
     int 1ah
@@ -266,6 +293,9 @@ map_single_1f:
     mov [win_base], ax
     mov word [win_off], 0
     mov word [win_size], 1fh
+%ifdef PARAM_WIN_ATTR
+    mov byte [win_attr], WIN_LOW_ATTR
+%endif
     mov al, [win_low_id]
     mov [win_bh], al
     call set_window
@@ -299,6 +329,9 @@ map_dual_window:
     mov [win_base], ax
     mov word [win_off], 0
     mov word [win_size], 10h
+%ifdef PARAM_WIN_ATTR
+    mov byte [win_attr], WIN_LOW_ATTR
+%endif
     mov al, [win_low_id]
     mov [win_bh], al
     call set_window
@@ -316,6 +349,9 @@ map_dual_window:
     add ax, 10h
     mov [win_base], ax
     mov word [win_off], 10h
+%ifdef PARAM_WIN_ATTR
+    mov byte [win_attr], WIN_HIGH_ATTR
+%endif
     mov al, [win_high_id]
     mov [win_bh], al
     call set_window
@@ -397,7 +433,7 @@ read_cis:
     mov dx, cis_msg
     call puts
     mov byte [rw_func], 8
-    mov byte [rw_sock], 1
+    mov byte [rw_sock], SOCKET_NUM
     mov word [rw_tlen], 256
     mov word [rw_clow], 0
     mov word [rw_chig], 0
@@ -760,7 +796,7 @@ print_nibble:
 rwreq:
 rw_leng db 16
 rw_func db 9
-rw_sock db 1
+rw_sock db SOCKET_NUM
 rw_memt db 0
 rw_memh dw 0
 rw_tlen dw 1
@@ -778,6 +814,9 @@ io_base dw 0300h
 win_base dw 0300h
 win_off dw 0000h
 win_size dw 0010h
+%ifdef PARAM_WIN_ATTR
+win_attr db 05h
+%endif
 last_ax dw 0
 corval db CARD_COR_VALUE
 fcsrval db 0
@@ -834,11 +873,23 @@ reset_warn_msg db 'Warning: NE2000 reset did not assert ISR.RST',13,10,'$'
 done_msg db 'Done. Try LXEN2216 0x66 next.',13,10,'$'
 fail_msg db 'Card BIOS call failed, AX=0x$'
 %ifdef GENERIC
+%if SOCKET_NUM = 1
 cis_msg db 'Reading CIS from socket 1',13,10,'$'
+%else
+cis_msg db 'Reading CIS from target socket',13,10,'$'
+%endif
 lan_msg db 'LAN function and 300h CFTABLE entry found',13,10,'$'
+%if SOCKET_NUM = 1
 io_windows_msg db 'Socket 1 I/O windows 0x$'
+%else
+io_windows_msg db 'Target socket I/O windows 0x$'
+%endif
 io_windows_sep db '/0x$'
+%if SOCKET_NUM = 1
 window_discovery_fail_msg db 'Could not find two socket 1 I/O windows',13,10,'$'
+%else
+window_discovery_fail_msg db 'Could not find two target-socket I/O windows',13,10,'$'
+%endif
 cor_off_msg db 'Derived COR offset 0x$'
 fcsr_off_msg db 'Derived FCSR offset 0x$'
 cor_val_msg db 'Derived COR value 0x$'

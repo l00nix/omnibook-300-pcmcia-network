@@ -1,0 +1,23 @@
+Crynwr NE2000 packet driver path
+================================
+
+NE2KUP.BAT expects:
+
+  C:\O300NET\CRYNWR\NE2000.COM
+
+NE2KDN.BAT unloads packet interrupt 0x66 using TERMIN.COM from either:
+
+  C:\O300NET\CRYNWR\TERMIN.COM
+  C:\LXNET\TERMIN.COM
+
+The intended Crynwr source is the fragglet mirror of Russ Nelson's DOS
+packet drivers:
+
+  https://github.com/fragglet/crynwr_mirror
+
+Tested command shape:
+
+  O300NIC 5
+  CRYNWR\NE2000.COM 0x66 5 0x300
+  TCPUP
+  C:\MTCP\PING.EXE 10.0.0.1
