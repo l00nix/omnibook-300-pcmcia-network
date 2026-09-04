@@ -42,16 +42,16 @@ The OmniBook 300 baseline is frozen on the GitHub 2499-byte `O300NIC.COM`,
 `NICUP` IRQ 5, and `LXEN2216.COM 0x66`. Netgear FA411, Accton EN2216-1, and
 Buffalo LPC3-CLT are compatible with that baseline. MAP Japan
 MPL-972/Tamarack is not compatible with the frozen baseline: it enumerates and
-loads both `LXEN2216.COM` and the vendor `PCMPD.COM` with MAC
-`00:C0:0C:02:7F:26`, but DHCP and static ARP/ping fail with zero received
-packets. Re-testing after replacing the CAT5 coupler produced the same
-packet-driver stats: `Packets in: 0`, `Packets out: 31`, `Errors out: 30`.
-IRQs 7, 10, and 11 were also tested. An experimental build matching vendor
-`DIRECTEN.EXE` window attributes made the vendor `DIAG.EXE` on-board RAM buffer
-test pass after `O300NIC`, but the card still fails loopback through ENC. The
-same ENC failure occurs after the vendor `DIRECTEN.EXE` enabler, so the
-remaining failure currently looks like a card/MAM/media path problem rather
-than an `O300NIC` window-mapping problem.
+loads both `LXEN2216.COM` and the vendor `PCMPD.COM` with a valid MAC address,
+but DHCP and static ARP/ping fail with zero received packets. Re-testing after
+replacing the CAT5 coupler produced the same packet-driver stats:
+`Packets in: 0`, `Packets out: 31`, `Errors out: 30`. IRQs 7, 10, and 11 were
+also tested. An experimental build matching vendor `DIRECTEN.EXE` window
+attributes made the vendor `DIAG.EXE` on-board RAM buffer test pass after
+`O300NIC`, but the card still fails loopback through ENC. The same ENC failure
+occurs after the vendor `DIRECTEN.EXE` enabler, so the remaining failure
+currently looks like a card/MAM/media path problem rather than an `O300NIC`
+window-mapping problem.
 
 During MPL-972 investigation, an experimental 2633-byte `O300NIC.COM` changed
 the high NE2000 I/O-window attribute and pre-initialized the 8390 before
@@ -59,8 +59,8 @@ loading `LXEN2216.COM`. That regressed EN2216-family cards: Buffalo and Accton
 still enumerated, read MAC addresses, and received external frames in polling
 diagnostics, but LXEN saw zero received packets. Restoring the GitHub
 2499-byte `O300NIC.COM` restored the baseline `NICUP` path immediately:
-FA411 DHCP leased `10.0.0.20`, Accton DHCP leased `10.0.0.154`, Buffalo DHCP
-leased `10.0.0.192`, and all three cards returned 4/4 gateway ping replies.
+FA411, Accton, and Buffalo all received DHCP leases, and all three cards
+returned 4/4 gateway ping replies.
 
 ## What This Does
 
@@ -192,11 +192,11 @@ Then test mTCP:
 
 ```dos
 TCPUP
-C:\MTCP\PING.EXE 10.0.0.1
+C:\MTCP\PING.EXE gateway-address
 WEB http://68k.news/
 ```
 
-Use your own gateway address if DHCP reports something other than `10.0.0.1`.
+Use the gateway address reported by DHCP.
 
 Unload the packet driver with:
 

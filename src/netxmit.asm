@@ -297,7 +297,7 @@ print_nibble:
     call putc
     ret
 
-msg_title db 13,10,'NETXMIT v0.1 - raw NE2000 transmit test at 300h',13,10,'EtherType 88B5, source 02:00:00:04:25:01',13,10,'$'
+msg_title db 13,10,'NETXMIT v0.1 - raw NE2000 transmit test at 300h',13,10,'EtherType 88B5, locally administered test source',13,10,'$'
 msg_byte db 'Byte-mode frames:',13,10,'$'
 msg_word db 'Word-mode frames:',13,10,'$'
 msg_isr db '  ISR=','$'

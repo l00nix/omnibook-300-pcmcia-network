@@ -31,26 +31,23 @@ and static ARP showed transmitted packets with zero packet-driver receives.
 IRQ, proving the cards and link could receive at the NIC level.
 
 Restoring the exact GitHub 2499-byte `O300NIC.COM` restored the baseline
-`NICUP` path. FA411 loaded IRQ 5 with MAC `00:40:F4:10:DF:C2`, DHCP leased
-`10.0.0.20`, and gateway ping returned 4/4 replies. Accton loaded IRQ 5 with
-MAC `00:00:E8:3A:43:01`, DHCP leased `10.0.0.154`, and gateway ping returned
-4/4 replies. Buffalo loaded IRQ 5 with MAC `00:07:40:19:1A:4D`, DHCP leased
-`10.0.0.192`, and gateway ping returned 4/4 replies.
+`NICUP` path. FA411, Accton, and Buffalo each loaded on IRQ 5 with valid card
+MAC addresses, received DHCP leases, and returned 4/4 gateway ping replies.
 
 ## MPL-972 Live Notes
 
 The MPL-972/Tamarack card was inserted in the live OmniBook 300 socket and
 identified as `TAMARACK MICROELECTRONICS` / `2408LAN`. It is not compatible
 with the frozen OmniBook 300 baseline. `O300NIC.COM` derived COR offset
-`01FCh`, FCSR offset `01FDh`, COR value `60h`, and MAC `00:C0:0C:02:7F:26`.
+`01FCh`, FCSR offset `01FDh`, COR value `60h`, and a valid card MAC address.
 
 DHCP did not complete with `LXEN2216.COM` on IRQ 5, 7, 10, or 11. mTCP packet
 stats after each DHCP run showed zero received packets and transmit errors.
 With the baseline `NICUP` path on IRQ 5, DHCP reported that no packets were
 seen on the wire; packet-driver stats showed `Packets out: 31`, `Errors out:
 30`, and `Packets in: 0` after DHCP plus a static ARP/ping attempt to
-`10.0.0.1`. Re-testing with a different CAT5 coupler produced the same final
-stats, so the coupler is not treated as the cause.
+the local gateway. Re-testing with a different CAT5 coupler produced the same
+final stats, so the coupler is not treated as the cause.
 The vendor `PCMPD.COM 0x66 11 0x300` also loaded with the same MAC but DHCP
 still timed out with zero received packets.
 
@@ -76,8 +73,8 @@ SET MTCPCFG=C:\MTCP\MTCP.CFG
 C:\MTCP\DHCP.EXE
 ```
 
-DHCP leased `10.0.0.20`, gateway ping to `10.0.0.1` returned 4/4 replies, DNS
-resolution worked, and `google.com` returned 4/4 ping replies.
+DHCP leased an address, gateway ping returned 4/4 replies, DNS resolution
+worked, and an external host returned 4/4 ping replies.
 
 | Card | O425 status |
 | --- | --- |

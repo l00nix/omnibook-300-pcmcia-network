@@ -24,10 +24,10 @@ Quick test:
   CD \O300NET
   NICUP
   TCPUP
-  C:\MTCP\PING.EXE 10.0.0.1
+  C:\MTCP\PING.EXE gateway-address
   WEB http://68k.news/
 
-Use your own gateway address if DHCP reports something other than 10.0.0.1.
+Use the gateway address reported by DHCP.
 
 Tested cards:
 

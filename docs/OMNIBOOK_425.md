@@ -15,7 +15,7 @@ O300NIC.COM 5
 C:\O300NET\CRYNWR\NE2000.COM 0x66 5 0x300
 SET MTCPCFG=C:\MTCP\MTCP.CFG
 C:\MTCP\DHCP.EXE
-C:\MTCP\PING.EXE 10.0.0.1
+C:\MTCP\PING.EXE gateway-address
 ```
 
 The shared wrapper form for new Crynwr testing is:
@@ -44,16 +44,16 @@ O300NIC.COM 5
   FCSR offset 01E1h
   COR value 47h
   NE2000 hardware reset OK
-  MAC 00:40:F4:10:DF:C2
+  MAC <card-mac>
 
 NE2000.COM 0x66 5 0x300
   Packet driver loaded at software interrupt 66h
 
 DHCP
-  IPADDR 10.0.0.20
-  GATEWAY 10.0.0.1
+  IPADDR <dhcp-address>
+  GATEWAY <gateway-address>
 
-PING 10.0.0.1
+PING <gateway-address>
   4 replies received, 0 lost
 ```
 
@@ -110,5 +110,5 @@ IRQ-level packet-driver behavior.
 The Accton B-slot test reduces the chance that this is a simple bad physical
 slot issue. A read-only socket scanner found FA411 in socket `01` and Accton
 in socket `02`; a forced socket-2 enabler mapped windows `06h`/`07h` to socket
-2 at `300h`/`310h`, read MAC `00:00:E8:3A:43:01`, then reproduced the same
+2 at `300h`/`310h`, read a valid card MAC address, then reproduced the same
 remote-DMA and DHCP failure.

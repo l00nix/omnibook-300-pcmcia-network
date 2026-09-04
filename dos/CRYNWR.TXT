@@ -20,4 +20,4 @@ Tested command shape:
   O300NIC 5
   CRYNWR\NE2000.COM 0x66 5 0x300
   TCPUP
-  C:\MTCP\PING.EXE 10.0.0.1
+  C:\MTCP\PING.EXE gateway-address

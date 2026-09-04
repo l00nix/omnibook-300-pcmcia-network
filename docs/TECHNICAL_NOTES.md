@@ -66,17 +66,17 @@ packet driver or hardware IRQ, proving the NIC receive path and physical link
 were alive below LXEN.
 
 Restoring the exact GitHub 2499-byte `O300NIC.COM` restored the baseline
-`NICUP` path on IRQ 5. FA411 DHCP leased `10.0.0.20`, Accton DHCP leased
-`10.0.0.154`, Buffalo DHCP leased `10.0.0.192`, all three cards returned 4/4
-gateway ping replies, and packet-driver stats showed received packets.
+`NICUP` path on IRQ 5. FA411, Accton, and Buffalo all received DHCP leases,
+returned 4/4 gateway ping replies, and showed received packets in packet-driver
+stats.
 This is the frozen OmniBook 300 baseline; MPL-972/Tamarack is excluded from
 the compatible-card set.
 
 Live MPL-972/Tamarack testing on the OmniBook 300 shows a different failure
-from the FA411 Crynwr case. `O300NIC.COM` v1.3 maps the card at `300h`, reads
-MAC `00:C0:0C:02:7F:26`, and `LXEN2216.COM` loads, but DHCP on IRQ 5, 7, 10,
-and 11 still shows no receive packets. The card's vendor `PCMPD.COM` also
-loads at `0x66 11 0x300`, but DHCP still times out with zero receive packets.
+from the FA411 Crynwr case. `O300NIC.COM` v1.3 maps the card at `300h`, reads a
+valid card MAC address, and `LXEN2216.COM` loads, but DHCP on IRQ 5, 7, 10, and
+11 still shows no receive packets. The card's vendor `PCMPD.COM` also loads at
+`0x66 11 0x300`, but DHCP still times out with zero receive packets.
 With the baseline `NICUP` path on IRQ 5, DHCP reports that no packets were
 seen on the wire; after DHCP plus a static ARP/ping attempt, packet-driver
 stats show `Packets out: 31`, `Errors out: 30`, and `Packets in: 0`. Re-testing
@@ -112,9 +112,9 @@ SET MTCPCFG=C:\MTCP\MTCP.CFG
 C:\MTCP\DHCP.EXE
 ```
 
-The O425 FA411 run reported MAC `00:40:F4:10:DF:C2`, received DHCP address
-`10.0.0.20`, pinged gateway `10.0.0.1` with 4/4 replies, and resolved/pinged
-`google.com` with 4/4 replies.
+The O425 FA411 run reported a valid card MAC address, received a DHCP address,
+pinged the local gateway with 4/4 replies, and resolved/pinged an external host
+with 4/4 replies.
 
 The FA411 is technically distinct from the EN2216-family cards that failed on
 the O425:
@@ -142,10 +142,10 @@ See `docs/OMNIBOOK_425.md` for the card-by-card status table.
 Observed mTCP proof:
 
 ```text
-IPADDR 10.0.0.20
+IPADDR <dhcp-address>
 NETMASK 255.255.255.0
-GATEWAY 10.0.0.1
-NAMESERVER 10.0.0.1
+GATEWAY <gateway-address>
+NAMESERVER <dns-server>
 ```
 
 Observed ping proof:
