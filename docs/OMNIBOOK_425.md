@@ -33,6 +33,8 @@ After DHCP succeeded, MicroWeb loaded `http://68k.news/` with:
 MICROWEB.EXE -video=h http://68k.news/
 ```
 
+![OmniBook 425 browsing 68k.news in MicroWeb](images/omnibook425-microweb-68k-news.jpg)
+
 The same FA411 approach also worked with a PCMCIA storage card present in the
 other OmniBook 425 slot.
 
